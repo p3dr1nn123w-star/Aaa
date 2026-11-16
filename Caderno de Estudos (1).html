@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caderno de Estudos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f8faff;--grid:#dbe4f5;--ink:#1d2559;--muted:#5a6390;--hl:#ffe45c;--margin:#e5484d;--card:#ffffff;--line:#c9d3ee;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#12162e;--grid:#1d2347;--ink:#e8ecff;--muted:#9aa4d6;--hl:#f2d63d;--margin:#ff6b70;--card:#1a2042;--line:#2f3866;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#12162e;--grid:#1d2347;--ink:#e8ecff;--muted:#9aa4d6;--hl:#f2d63d;--margin:#ff6b70;--card:#1a2042;--line:#2f3866;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.55;
+background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:28px 20px 60px 56px;position:relative}
+.wrap::before{content:"";position:absolute;left:36px;top:0;bottom:0;width:2px;background:var(--margin);opacity:.7}
+h1,h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;line-height:1.05}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+h1 span{background:linear-gradient(transparent 55%,var(--hl) 55%);padding:0 .1em}
+.sub{color:var(--muted);margin:10px 0 24px;max-width:46ch}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+nav button{font:inherit;font-weight:700;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:8px 16px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--hl);color:#1d2559}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--margin);outline-offset:2px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:20px}
+h2{font-size:1.5rem;font-weight:800;margin-bottom:14px}
+.timer{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:clamp(4.5rem,22vw,9rem);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:10px;padding:9px 18px;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.small{padding:4px 10px;font-size:.9rem}
+.chip{font:inherit;border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:4px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--hl);color:#1d2559;font-weight:700}
+.muted{color:var(--muted)}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:9px 12px;width:100%}
+textarea{min-height:260px;resize:vertical}
+.add{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-bottom:14px}
+.add select{width:auto}
+ul{list-style:none;margin:0;padding:0}
+li.t{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+li.t input{width:22px;height:22px;accent-color:var(--ink);flex:none}
+li.t .x{flex:1}
+li.t.done .x{text-decoration:line-through;color:var(--muted)}
+.tag{font-size:.8rem;border:1.5px solid var(--ink);border-radius:6px;padding:0 8px;background:var(--hl);color:#1d2559}
+.del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;line-height:1}
+.fc{min-height:210px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:500;cursor:pointer;padding:24px;border:2px solid var(--ink);border-radius:14px;background:var(--card);width:100%;color:var(--ink)}
+.fc.back{background:var(--hl);color:#1d2559}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{font-size:.95rem}
+@media (max-width:560px){.wrap{padding-left:44px}.wrap::before{left:26px}.add{grid-template-columns:1fr}.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.subs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:18px}
+.sb{font:inherit;text-align:left;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.sb b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.05rem}
+.sb small{color:var(--muted)}
+.sb[aria-pressed="true"]{background:var(--hl);color:#1d2559}
+.sb[aria-pressed="true"] small{color:#1d2559}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--margin)}
+.add2{display:flex;gap:8px;flex-wrap:wrap}.add2 select{flex:1;min-width:150px;width:auto}
+.out{white-space:pre-wrap;background:var(--paper);border:2px solid var(--line);border-left:6px solid var(--hl);border-radius:10px;padding:14px;margin:12px 0;max-width:70ch}
+.out:empty{display:none}
+.q{margin:20px 0}.q p{margin:0 0 8px;font-weight:700}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:6px;cursor:pointer;white-space:pre-wrap}
+.opt.sel{border-color:var(--ink);background:var(--hl);color:#1d2559}
+.opt.ok{background:#d6f5dc;color:#10361a;border-color:#2e9b4a}
+.opt.no{background:#fde0e0;color:#5a1313;border-color:#e5484d}
+.fb{font-size:.95rem;color:var(--muted)}
+.score{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:1.4rem;margin:8px 0}
+:root{--hl:#d6c9ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hl:#9d86f5}}
+:root[data-theme="dark"]{--hl:#9d86f5}
+.log{height:min(55vh,460px);overflow:auto;border:2px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;background:var(--paper)}
+.bub{max-width:85%;padding:9px 13px;border-radius:14px;margin:0 0 8px;white-space:pre-wrap}
+.bub.me{margin-left:auto;background:var(--hl);color:#1d2559}
+.bub.ai{background:var(--card);border:2px solid var(--line)}
+.rc{border:2px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--card)}
+.rc b{font-family:"Bricolage Grotesque",system-ui,sans-serif}
+.rc p{margin:6px 0 0}
+.av{font-size:2.2rem;line-height:1}
+details summary:focus-visible{outline:3px solid var(--margin);outline-offset:2px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{font:inherit;text-align:left;cursor:pointer;color:var(--ink);background:color-mix(in srgb,var(--c) 12%,var(--card));border:2px solid color-mix(in srgb,var(--c) 50%,var(--line));border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.tile b{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem}
+.tile span{color:var(--muted);font-size:.92rem}
+.badge{font-size:.8rem;border-radius:999px;padding:2px 10px;border:1.5px solid var(--line);color:var(--muted)}
+.badge.ok{border-color:#2e9b4a;color:#2e9b4a}
+.pjb{flex:1;text-align:left;font:inherit;color:var(--ink);background:none;border:none;cursor:pointer;padding:0}
+.pjb small{display:block;color:var(--muted)}
+.pv[hidden]{display:none}
+#printArea{display:none}
+@media (max-width:560px){.tiles{grid-template-columns:1fr}}
+@media print{.wrap{display:none!important}body{background:#fff!important}#printArea{display:block;color:#000;font-family:"Times New Roman",serif;font-size:12pt;line-height:1.5;text-align:justify}#printArea h1{font-size:16pt;text-align:center}#printArea h2{font-size:13pt;break-after:avoid}#printArea h3{font-size:12pt}#printArea .capa{text-align:center;min-height:90vh;display:flex;flex-direction:column;justify-content:space-between;break-after:page}#printArea .sum{break-after:page}@page{margin:3cm 2cm 2cm 3cm;@bottom-right{content:counter(page)}}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <h1>Caderno de <span>estudos</span></h1>
+  <p class="sub">Todas as matérias do 1º ano do Ensino Médio: conteúdos, flashcards prontos, tarefas, foco e anotações. Tudo fica salvo neste navegador.</p>
+  <div class="card" style="margin-bottom:18px">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="hi" style="font-size:1.3rem;margin:0"></h2>
+      <div class="row"><input id="nome" placeholder="Seu nome" aria-label="Seu nome" style="width:120px"><select id="ano" aria-label="Ano escolar" style="width:auto"><option>1º ano</option><option>2º ano</option><option>3º ano</option></select></div>
+    </div>
+    <div class="row stat" style="gap:18px;margin:10px 0 8px"><b id="stLv"></b><span id="stXp"></span><span id="stSt"></span><span id="stH"></span><span id="stT"></span></div>
+    <div class="bar"><i id="stBar"></i></div>
+  </div>
+  <nav role="tablist" aria-label="Seções">
+    <button role="tab" aria-selected="true" data-t="foco">Foco</button>
+    <button role="tab" aria-selected="false" data-t="chat">Professor ao vivo</button>
+    <button role="tab" aria-selected="false" data-t="amigo">Meu Amigo de Estudos</button>
+    <button role="tab" aria-selected="false" data-t="pesq">Pesquisas e Trabalhos</button>
+    <button role="tab" aria-selected="false" data-t="prof">Aula e prova</button>
+    <button role="tab" aria-selected="false" data-t="redacao">Redação ENEM</button>
+    <button role="tab" aria-selected="false" data-t="materias">Matérias</button>
+    <button role="tab" aria-selected="false" data-t="tarefas">Tarefas</button>
+    <button role="tab" aria-selected="false" data-t="cards">Flashcards</button>
+    <button role="tab" aria-selected="false" data-t="notas">Notas</button>
+  </nav>
+
+  <section id="foco" class="on">
+    <div class="card">
+      <div class="row" id="modes">
+        <button class="chip" aria-pressed="true" data-m="25">Estudo 25</button>
+        <button class="chip" aria-pressed="false" data-m="5">Pausa 5</button>
+        <button class="chip" aria-pressed="false" data-m="15">Pausa longa 15</button>
+      </div>
+      <div class="timer" id="time" aria-live="off">25:00</div>
+      <div class="row">
+        <button class="btn" id="go">Iniciar</button>
+        <button class="btn alt" id="reset">Reiniciar</button>
+        <span class="muted stat" id="sess"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="pesq">
+    <div class="card" id="pHome">
+      <div class="row" style="margin-bottom:14px"><span class="av" aria-hidden="true">🎓</span><div><h2 style="margin:0">Central de Pesquisas</h2><p class="muted" style="margin:0">Seu espaço para pesquisar, criar e aprender.</p></div></div>
+      <div class="tiles">
+        <button class="tile" data-v="criar" style="--c:#3b82f6"><b>Criar trabalho</b><span>Elabore pesquisas e trabalhos escolares.</span></button>
+        <button class="tile" data-v="pdfs" style="--c:#22a559"><b>Meus PDFs</b><span>Envie documentos e converse com a IA.</span></button>
+        <button class="tile" data-v="web" style="--c:#e8a317"><b>Pesquisar na internet</b><span>Encontre fontes confiáveis.</span></button>
+        <button class="tile" data-v="res" style="--c:#8b5cf6"><b>Resumos inteligentes</b><span>Transforme conteúdos em materiais de estudo.</span></button>
+      </div>
+      <div class="row" style="justify-content:space-between;margin:22px 0 4px"><h2 style="font-size:1.1rem;margin:0">Seus projetos recentes</h2><select id="pjF" aria-label="Pasta" style="width:auto"></select></div>
+      <ul id="pjList"></ul>
+    </div>
+    <div class="card" id="pViews" hidden>
+      <button class="btn alt small" id="pBack" style="margin-bottom:14px">← Central de Pesquisas</button>
+
+      <div class="pv" id="v-criar"><h2>Criar trabalho</h2>
+        <div class="two"><input id="wTema" placeholder="Tema do trabalho" aria-label="Tema"><select id="wMat" aria-label="Matéria"></select></div>
+        <div class="two" style="margin-top:8px"><select id="wAno" aria-label="Ano"><option>1º ano</option><option>2º ano</option><option>3º ano</option></select><select id="wTam" aria-label="Tamanho"><option>1 página</option><option>2 a 3 páginas</option><option>4 a 5 páginas</option></select></div>
+        <div class="two" style="margin-top:8px"><select id="wFmt" aria-label="Formato"><option>Trabalho escrito</option><option>Relatório</option><option>Roteiro de apresentação</option></select><select id="wRef" aria-label="PDF de referência"></select></div>
+        <textarea id="wOri" placeholder="Orientações do professor (opcional)" aria-label="Orientações" style="min-height:80px;margin-top:8px"></textarea>
+        <div class="row" style="margin:10px 0"><button class="btn" id="wGo">Gerar estrutura e texto</button></div>
+        <div id="wEdit" hidden>
+          <input id="wTit" aria-label="Título do projeto" style="font-weight:700;margin-bottom:8px">
+          <textarea id="wTxt" style="min-height:360px" aria-label="Texto do trabalho"></textarea>
+          <p class="muted stat">Use # para o título, ## para seções e ### para subseções. Edite à vontade: o trabalho é seu.</p>
+          <div class="row"><input id="wPasta" placeholder="Pasta (opcional)" aria-label="Pasta" style="width:160px"><label class="stat"><input type="checkbox" id="wAbnt" checked style="width:auto"> ABNT (capa, sumário, margens)</label></div>
+          <div class="row" style="margin:10px 0"><button class="btn" id="wSave">Salvar projeto</button><button class="btn alt" id="wPdf">Imprimir ou salvar em PDF</button><button class="btn alt" id="wDoc">Baixar para Word</button></div>
+          <h2 style="font-size:1.1rem;margin-top:18px">Modo aprendizado</h2>
+          <div class="row"><select id="wLearn" aria-label="Ajuda" style="width:auto"><option value="e">Explicar o que escrevi</option><option value="c">Achar trechos confusos</option><option value="p">Escrever com minhas palavras</option><option value="m">Sugerir melhorias</option><option value="t">Me testar sobre o trabalho</option></select><button class="btn alt" id="wAsk">Pedir ao professor</button></div>
+        </div>
+        <div class="out" id="wMsg" aria-live="polite"></div>
+      </div>
+
+      <div class="pv" id="v-pdfs"><h2>Meus PDFs</h2>
+        <div class="row"><label class="btn" for="pdfIn">Enviar PDF</label><input type="file" id="pdfIn" accept="application/pdf" multiple hidden><span class="muted stat" id="pdfSt"></span></div>
+        <ul id="pdfList"></ul>
+        <p class="muted stat">Marque os PDFs que quer usar na conversa. A IA responde com base neles e indica a página.</p>
+        <div class="log" id="dLog"></div>
+        <div class="row" id="dChips"></div>
+        <div class="row" style="margin-top:8px"><input id="dIn" placeholder="Pergunte sobre o PDF (ex.: explica a página 8)" aria-label="Pergunta" style="flex:1;min-width:200px"><button class="btn" id="dSend">Perguntar</button></div>
+      </div>
+
+      <div class="pv" id="v-web"><h2>Pesquisar na internet</h2>
+        <p class="muted">Aqui a IA não navega na internet. Ela monta o plano de pesquisa e abre buscas em fontes confiáveis. Você confere as fontes e escreve com suas palavras.</p>
+        <div class="add2"><input id="sQ" placeholder="O que você quer pesquisar?" aria-label="Pesquisa" style="flex:2;min-width:200px"><select id="sMat" aria-label="Matéria"></select><button class="btn" id="sGo">Montar plano</button></div>
+        <div class="row" id="sLinks" style="margin:10px 0"></div>
+        <div class="out" id="sOut" aria-live="polite"></div>
+      </div>
+
+      <div class="pv" id="v-res"><h2>Resumos inteligentes</h2>
+        <div class="two"><select id="rSrc" aria-label="Fonte"></select><select id="rTipo" aria-label="Tipo de material"></select></div>
+        <div class="two" style="margin:8px 0"><select id="rNiv" aria-label="Nível"><option>Explicação simples</option><option>Explicação intermediária</option><option>Explicação aprofundada</option></select><button class="btn" id="rGo">Gerar material</button></div>
+        <textarea id="rIn" placeholder="Ou cole aqui o texto que quer resumir" aria-label="Texto" style="min-height:110px"></textarea>
+        <div class="out" id="rOut" aria-live="polite"></div>
+        <button class="btn alt" id="rSave" hidden>Salvar nos projetos</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="amigo">
+    <div class="card">
+      <div class="row" style="margin-bottom:12px"><span class="av" id="aAv" aria-hidden="true"></span><h2 id="aHead" style="margin:0"></h2></div>
+      <p class="muted" id="aNo" hidden>O amigo só funciona quando o site é aberto pelo Claude. Os outros recursos continuam disponíveis.</p>
+      <div id="aBox">
+        <details style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:700">Personalizar e privacidade</summary>
+          <div class="add2" style="margin:10px 0">
+            <input id="aName" maxlength="20" placeholder="Nome do seu amigo" aria-label="Nome do amigo">
+            <select id="aAvS" aria-label="Avatar"><option>🦊</option><option>🐼</option><option>🤖</option><option>🐱</option><option>🦉</option><option>🐙</option></select>
+            <select id="aTom" aria-label="Personalidade"><option>Divertido</option><option>Calmo</option><option>Animado</option></select>
+          </div>
+          <label class="stat"><input type="checkbox" id="aMem" style="width:auto"> Deixar o amigo lembrar do meu progresso</label>
+          <div class="row" style="margin-top:8px"><button class="btn alt small" id="aSee">Ver o que ele sabe</button><button class="btn alt small" id="aWipe">Apagar histórico de conversas</button></div>
+          <div class="out" id="aSeeOut"></div>
+        </details>
+        <div class="row"><select id="aHist" aria-label="Conversas" style="width:auto;max-width:100%"></select><button class="btn alt small" id="aNew">Nova conversa</button><select id="aSub" aria-label="Matéria" style="width:auto"></select><label class="stat"><input type="checkbox" id="aVoice" style="width:auto"> Ler em voz alta</label></div>
+        <div class="log" id="aLog" aria-live="polite"></div>
+        <div class="row" id="aChips"></div>
+        <div class="row" style="margin-top:8px"><input id="aIn" placeholder="Conta pro seu amigo o que está pegando..." aria-label="Mensagem" style="flex:1;min-width:200px"><button class="btn alt" id="aMic" hidden>Falar</button><label class="btn alt" id="aPhoto" for="aFile" hidden>Foto</label><input type="file" id="aFile" accept="image/*" hidden><button class="btn" id="aSend">Enviar</button></div>
+        <p class="muted stat" id="aAtt"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="chat">
+    <div class="card">
+      <h2>Professor ao vivo</h2>
+      <p class="muted" id="cNo" hidden>O professor só funciona quando o site é aberto pelo Claude. Os outros recursos continuam disponíveis.</p>
+      <div id="cBox">
+        <div class="row"><select id="cSub" aria-label="Matéria" style="width:auto"></select><button class="btn alt small" id="cNew">Nova conversa</button><label class="stat"><input type="checkbox" id="cVoice" style="width:auto"> Ler respostas em voz alta</label></div>
+        <div class="log" id="cLog" aria-live="polite"></div>
+        <div class="row"><input id="cIn" placeholder="Pergunte qualquer coisa, do básico ao avançado..." aria-label="Mensagem" style="flex:1;min-width:200px"><button class="btn alt" id="cMic" hidden>Falar</button><label class="btn alt" id="cPhoto" for="cFile" hidden>Foto</label><input type="file" id="cFile" accept="image/*" hidden><button class="btn" id="cSend">Enviar</button></div>
+        <p class="muted stat" id="cAtt"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="redacao">
+    <div class="card">
+      <h2>Redação ENEM com correção da IA</h2>
+      <p class="muted" id="rNo" hidden>A correção só funciona quando o site é aberto pelo Claude.</p>
+      <div id="rBox">
+        <div class="add2"><input id="rTema" placeholder="Tema da redação" aria-label="Tema" style="flex:2;min-width:200px"><button class="btn alt" id="rSug">Sugerir tema</button></div>
+        <textarea id="rTxt" placeholder="Escreva sua redação aqui (mínimo de 400 caracteres)." aria-label="Redação" style="margin-top:8px"></textarea>
+        <div class="row" style="margin:10px 0"><button class="btn" id="rGo">Corrigir redação</button><span class="muted stat" id="rCnt"></span></div>
+        <div id="rOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prof">
+    <div class="card">
+      <h2>Professor IA</h2>
+      <p class="muted" id="pNo" hidden>O Professor IA só funciona quando o site é aberto pelo Claude. Os outros recursos continuam disponíveis.</p>
+      <div id="pBox">
+        <div class="add2"><select id="pSub" aria-label="Matéria"></select><select id="pTop" aria-label="Conteúdo"></select><button class="btn" id="pEx">Explicar</button></div>
+        <div class="out" id="pOut" aria-live="polite">Escolha a matéria e o conteúdo. O professor explica passo a passo e depois aplica uma prova para você marcar X.</div>
+        <div class="row" style="margin:12px 0"><button class="btn alt" id="pQz" disabled>Fazer prova (marque X)</button><button class="btn alt" id="pNext">Próximo conteúdo</button></div>
+        <div id="pQuiz"></div>
+        <div class="row"><input id="pQ" placeholder="Tenho uma dúvida sobre isso..." aria-label="Dúvida" style="flex:1;min-width:200px"><button class="btn alt" id="pAsk">Perguntar</button></div>
+        <div class="out" id="pAns" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="materias">
+    <div class="card">
+      <h2>Matérias do 1º ano</h2>
+      <div class="subs" id="subs"></div>
+      <h2 id="mTitle" style="font-size:1.2rem"></h2>
+      <ul id="mList"></ul>
+      <div class="row" style="margin-top:14px"><button class="btn" id="mFc">Estudar com flashcards</button><button class="btn alt" id="mNt">Abrir anotações</button></div>
+    </div>
+  </section>
+
+  <section id="tarefas">
+    <div class="card">
+      <h2>O que estudar hoje</h2>
+      <div class="add">
+        <input id="tIn" placeholder="Ex.: Resolver 10 questões de funções" aria-label="Nova tarefa">
+        <select id="tSub" aria-label="Matéria"></select>
+        <button class="btn" id="tAdd">Adicionar</button>
+      </div>
+      <ul id="tList"></ul>
+      <p class="muted stat" id="tCount"></p>
+    </div>
+  </section>
+
+  <section id="cards">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:14px"><h2 style="margin:0">Flashcards</h2><select id="fFilter" aria-label="Filtrar por matéria" style="width:auto"></select></div>
+      <button class="fc" id="fc" aria-live="polite"></button>
+      <div class="row" style="margin:12px 0">
+        <button class="btn alt" id="prev">Anterior</button>
+        <button class="btn alt" id="next">Próximo</button>
+        <button class="btn alt" id="shuf">Embaralhar</button>
+        <button class="btn alt" id="fdel">Excluir este</button>
+        <span class="muted stat" id="fcCount"></span>
+      </div>
+      <div class="two">
+        <input id="fQ" placeholder="Pergunta" aria-label="Pergunta">
+        <input id="fA" placeholder="Resposta" aria-label="Resposta">
+      </div>
+      <div class="row" style="margin-top:8px"><select id="fSub" aria-label="Matéria do novo flashcard" style="width:auto"></select><button class="btn" id="fAdd">Criar flashcard</button></div>
+    </div>
+  </section>
+
+  <section id="notas">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:14px"><h2 style="margin:0">Anotações</h2><select id="nSub" aria-label="Matéria das anotações" style="width:auto"></select></div>
+      <textarea id="nt" placeholder="Escreva aqui o que aprendeu. Salva automaticamente." aria-label="Anotações"></textarea>
+      <p class="muted stat" id="ntS"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+/* Abas */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+});
+
+/* Foco */
+let mins=25,left=1500,run=null;
+const today=new Date().toISOString().slice(0,10);
+let sessions=store.get('ce-sess',{});
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function draw(){$('#time').textContent=fmt(left);document.title=run?fmt(left)+' · Estudos':'Caderno de Estudos';
+  $('#sess').textContent='Sessões hoje: '+(sessions[today]||0)}
+function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=660;o.start();o.stop(c.currentTime+.4)}catch(e){}}
+function stop(){clearInterval(run);run=null;$('#go').textContent='Iniciar'}
+$('#go').onclick=()=>{
+  if(run){stop();draw();return}
+  $('#go').textContent='Pausar';
+  run=setInterval(()=>{left--;
+    if(left<=0){stop();left=0;beep();if(mins===25){sessions[today]=(sessions[today]||0)+1;store.set('ce-sess',sessions);addXP(30)}}
+    draw()},1000);
+};
+$('#reset').onclick=()=>{stop();left=mins*60;draw()};
+document.querySelectorAll('#modes .chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('#modes .chip').forEach(x=>x.setAttribute('aria-pressed',x===c));
+  stop();mins=+c.dataset.m;left=mins*60;draw()});
+draw();
+
+/* Matérias */
+const SUBJ={
+"Português":{t:["Interpretação e gêneros textuais","Funções da linguagem","Variação linguística","Trovadorismo e Humanismo","Classicismo e Quinhentismo","Barroco","Classes de palavras"],
+c:[["Função referencial da linguagem","Foco no assunto; informa de modo objetivo, como em uma notícia."],["Quem foi Camões?","Principal poeta do Classicismo português, autor de Os Lusíadas."],["Marca principal do Barroco","Contraste e conflito entre fé e razão, com linguagem exagerada."]]},
+"Matemática":{t:["Conjuntos e intervalos","Função afim","Função quadrática","Função exponencial e logaritmo","Progressões (PA e PG)","Trigonometria no triângulo retângulo"],
+c:[["Termo geral da PA","aₙ = a₁ + (n − 1)·r"],["Termo geral da PG","aₙ = a₁ · qⁿ⁻¹"],["Vértice da parábola (x)","xᵥ = −b / 2a"],["Seno, cosseno e tangente","sen = oposto/hipotenusa; cos = adjacente/hipotenusa; tg = oposto/adjacente"]]},
+"Física":{t:["Grandezas e unidades do SI","Movimento uniforme","Movimento uniformemente variado","Queda livre e lançamentos","Vetores","Leis de Newton","Trabalho e energia"],
+c:[["Função horária do MU","S = S₀ + v·t"],["Função horária do MUV","S = S₀ + v₀·t + a·t²/2"],["Segunda lei de Newton","F = m·a"]]},
+"Química":{t:["Matéria e suas propriedades","Modelos atômicos","Tabela periódica","Ligações químicas","Funções inorgânicas","Reações e balanceamento"],
+c:[["Cargas do próton, nêutron e elétron","Positiva, nula e negativa."],["Ligação iônica","Transferência de elétrons, normalmente entre metal e ametal."],["Solução ácida a 25 °C","Tem pH menor que 7."]]},
+"Biologia":{t:["Origem da vida","Química da vida","Citologia: tipos de célula","Organelas","Fotossíntese e respiração celular","Mitose e meiose"],
+c:[["Função da mitocôndria","Respiração celular, produzindo ATP."],["Procarionte x eucarionte","O eucarionte tem núcleo delimitado por membrana; o procarionte não."],["Resultado da meiose","Quatro células haploides geneticamente diferentes."]]},
+"História":{t:["Pré-história e primeiras civilizações","Grécia e Roma antigas","Idade Média e feudalismo","Renascimento e Reformas","Grandes Navegações","Povos originários da América"],
+c:[["Democracia ateniense","Cidadãos decidiam diretamente na assembleia; mulheres, escravizados e estrangeiros ficavam de fora."],["Feudalismo","Sistema baseado na terra, na servidão e na vassalagem."],["Renascimento","Movimento cultural dos séculos XIV a XVI que valorizou o humanismo e a razão."]]},
+"Geografia":{t:["Cartografia e orientação","Coordenadas e fusos horários","Estrutura da Terra e relevo","Climas e biomas","Hidrografia","Questões ambientais"],
+c:[["Latitude","Distância em graus ao norte ou ao sul do Equador (0° a 90°)."],["Meridiano de origem","Greenwich, com longitude 0°."],["Camadas da Terra","Crosta, manto e núcleo."]]},
+"Filosofia":{t:["O que é filosofia","Mito e logos","Pré-socráticos","Sócrates, Platão e Aristóteles","Teoria do conhecimento","Ética"],
+c:[["Maiêutica de Sócrates","Perguntas e diálogo que levam a pessoa a examinar as próprias ideias."],["Alegoria da caverna","Platão mostra a passagem da aparência ilusória ao conhecimento verdadeiro."],["Mito x logos","Mito explica o mundo por narrativas; logos, pela razão."]]},
+"Sociologia":{t:["Surgimento da Sociologia","Durkheim, Weber e Marx","Cultura e identidade","Socialização","Instituições sociais","Desigualdade e estratificação"],
+c:[["Fato social (Durkheim)","Modo de agir, pensar e sentir exterior ao indivíduo e que exerce coerção sobre ele."],["Etnocentrismo","Julgar outras culturas tomando a própria como superior."],["Ação social (Weber)","Ação humana com sentido atribuído pelo agente e orientada a outras pessoas."]]},
+"Inglês":{t:["Verb to be","Simple Present","Present Continuous","Simple Past","Vocabulário e cognatos","Leitura de textos"],
+c:[["Past tense of go","went"],["Estrutura do Present Continuous","am / is / are + verbo com -ing"],["Simple Present na 3ª pessoa","Acrescenta -s ou -es: she studies, he works."]]},
+"Artes":{t:["Arte pré-histórica e antiga","Arte medieval","Renascimento","Barroco","Elementos da linguagem visual","Arte indígena e popular brasileira"],
+c:[["Quem pintou a Mona Lisa?","Leonardo da Vinci, no Renascimento."],["Aleijadinho","Escultor e arquiteto do Barroco mineiro."]]},
+"Educação Física":{t:["Corpo e saúde","Esportes coletivos","Ginástica","Dança","Capacidades físicas","Lutas"],
+c:[["Capacidades físicas","Força, resistência, flexibilidade, velocidade e agilidade."],["Benefício da atividade física regular","Melhora a saúde do coração, o humor, o sono e a disposição."]]}
+};
+SUBJ["Espanhol"]={t:["Alfabeto e pronúncia","Saludos y presentaciones","Artículos e gênero dos substantivos","Presente do indicativo","Verbos ser, estar e tener","Falsos amigos"],
+c:[["Como se diz obrigado em espanhol?","Gracias."],["Falso amigo: exquisito","Significa delicioso ou requintado, não esquisito."],["Artigos definidos em espanhol","el, la, los, las."]]};
+SUBJ["Literatura"]={t:["Gêneros literários","Trovadorismo","Humanismo","Classicismo","Quinhentismo","Barroco e Arcadismo"],
+c:[["Cantiga de amigo","Poema trovadoresco em que o eu lírico é feminino e sofre pela ausência do amado."],["Quinhentismo","Literatura de informação e catequese produzida no Brasil colonial do século XVI."],["Arcadismo","Escola literária do século XVIII que valoriza a simplicidade, a natureza e a razão."]]};
+SUBJ["Redação"]={t:["Estrutura dissertativo-argumentativa","Tese e argumentos","Coesão e conectivos","Proposta de intervenção","As 5 competências do ENEM","Repertório sociocultural"],
+c:[["Elementos da proposta de intervenção no ENEM","Agente, ação, meio ou modo, finalidade e detalhamento."],["Quantas competências o ENEM avalia na redação?","Cinco, de 0 a 200 pontos cada, totalizando até 1000."],["Função da tese","Apresentar a opinião central que o texto vai defender."]]};
+const names=Object.keys(SUBJ);
+function fill(sel,first){sel.innerHTML='';if(first){const o=document.createElement('option');o.value='';o.textContent=first;sel.append(o)}
+  names.forEach(n=>{const o=document.createElement('option');o.value=o.textContent=n;sel.append(o)})}
+fill($('#tSub'),'Geral');fill($('#fFilter'),'Todas as matérias');fill($('#fSub'));fill($('#nSub'),'Geral');
+const go=t=>document.querySelector('nav [data-t="'+t+'"]').click();
+let done=store.get('ce-topics',{}),cur=names[0];
+function drawM(){
+  const g=$('#subs');g.innerHTML='';
+  names.forEach(n=>{
+    const tot=SUBJ[n].t.length,k=SUBJ[n].t.filter((_,i)=>done[n+'|'+i]).length;
+    const b=document.createElement('button');b.className='sb';b.setAttribute('aria-pressed',n===cur);
+    b.innerHTML='<b></b><small></small><span class="bar"><i></i></span>';
+    b.children[0].textContent=n;b.children[1].textContent=k+' de '+tot+' conteúdos';
+    b.children[2].firstChild.style.width=(100*k/tot)+'%';
+    b.onclick=()=>{cur=n;drawM()};g.append(b)});
+  $('#mTitle').textContent=cur+': conteúdos do ano';
+  const ul=$('#mList');ul.innerHTML='';
+  SUBJ[cur].t.forEach((t,i)=>{
+    const key=cur+'|'+i,li=document.createElement('li');li.className='t'+(done[key]?' done':'');
+    const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!done[key];cb.setAttribute('aria-label','Estudado: '+t);
+    cb.onchange=()=>{done[key]=cb.checked;store.set('ce-topics',done);drawM()};
+    const x=document.createElement('span');x.className='x';x.textContent=t;li.append(cb,x);ul.append(li)});
+}
+$('#mFc').onclick=()=>{$('#fFilter').value=cur;ci=0;flip=false;drawC();go('cards')};
+$('#mNt').onclick=()=>{$('#nSub').value=cur;loadN();go('notas')};
+
+/* Tarefas */
+let tasks=store.get('ce-tasks',[{t:'Revisar o conteúdo da última aula',s:'Geral',d:false}]);
+function drawT(){
+  const ul=$('#tList');ul.innerHTML='';
+  tasks.forEach((k,i)=>{
+    const li=document.createElement('li');li.className='t'+(k.d?' done':'');
+    const cb=document.createElement('input');cb.type='checkbox';cb.checked=k.d;cb.setAttribute('aria-label','Concluir: '+k.t);
+    cb.onchange=()=>{k.d=cb.checked;store.set('ce-tasks',tasks);drawT()};
+    const x=document.createElement('span');x.className='x';x.textContent=k.t;li.append(cb,x);
+    if(k.s){const g=document.createElement('span');g.className='tag';g.textContent=k.s;li.append(g)}
+    const d=document.createElement('button');d.className='del';d.textContent='×';d.setAttribute('aria-label','Excluir tarefa');
+    d.onclick=()=>{tasks.splice(i,1);store.set('ce-tasks',tasks);drawT()};li.append(d);ul.append(li)});
+  const n=tasks.filter(k=>k.d).length;
+  $('#tCount').textContent=tasks.length?n+' de '+tasks.length+' concluídas':'Nenhuma tarefa ainda. Adicione a primeira acima.';
+}
+function addT(){const v=$('#tIn').value.trim();if(!v)return;
+  tasks.push({t:v,s:$('#tSub').value,d:false});store.set('ce-tasks',tasks);$('#tIn').value='';drawT()}
+$('#tAdd').onclick=addT;$('#tIn').onkeydown=e=>{if(e.key==='Enter')addT()};
+
+/* Flashcards */
+let cards=store.get('ce-cards2',null);
+if(!cards){cards=[];names.forEach(n=>SUBJ[n].c.forEach(([q,a])=>cards.push({q,a,s:n})))}
+let ci=0,flip=false;
+const deck=()=>{const f=$('#fFilter').value;return cards.filter(c=>!f||c.s===f)};
+function drawC(){
+  const d=deck(),f=$('#fc');
+  if(!d.length){f.textContent='Nenhum flashcard nesta matéria. Crie o primeiro abaixo.';f.className='fc';$('#fcCount').textContent='';return}
+  ci=(ci+d.length)%d.length;
+  f.textContent=flip?d[ci].a:d[ci].q;f.className='fc'+(flip?' back':'');
+  $('#fcCount').textContent=(ci+1)+' / '+d.length+' · '+d[ci].s+(flip?' · resposta':'');
+}
+const save=()=>store.set('ce-cards2',cards);
+$('#fc').onclick=()=>{flip=!flip;drawC()};
+$('#next').onclick=()=>{ci++;flip=false;drawC()};
+$('#prev').onclick=()=>{ci--;flip=false;drawC()};
+$('#fFilter').onchange=()=>{ci=0;flip=false;drawC()};
+$('#shuf').onclick=()=>{for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]]}ci=0;flip=false;save();drawC()};
+$('#fdel').onclick=()=>{const d=deck();if(!d.length)return;cards.splice(cards.indexOf(d[ci]),1);flip=false;save();drawC()};
+$('#fAdd').onclick=()=>{const q=$('#fQ').value.trim(),a=$('#fA').value.trim();if(!q||!a)return;
+  const s=$('#fSub').value;cards.push({q,a,s});save();$('#fQ').value='';$('#fA').value='';
+  $('#fFilter').value=s;ci=deck().length-1;flip=false;drawC()};
+
+/* Notas */
+let notes=store.get('ce-notes2',{});
+if(!notes['']){const o=store.get('ce-notes','');if(o)notes['']=o}
+const loadN=()=>{$('#nt').value=notes[$('#nSub').value]||'';$('#ntS').textContent=''};
+$('#nSub').onchange=loadN;
+$('#nt').oninput=e=>{notes[$('#nSub').value]=e.target.value;store.set('ce-notes2',notes);$('#ntS').textContent='Salvo. '+e.target.value.length+' caracteres.'};
+/* Professor IA */
+const pS=$('#pSub'),pT=$('#pTop');fill(pS);
+function fillTop(){pT.innerHTML='';SUBJ[pS.value].t.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t;pT.append(o)})}
+pS.onchange=fillTop;fillTop();
+let sample=null,lastExp='',quiz=null,ans=[],graded=false;
+const SYS='Você é o Professor IA, um professor paciente e animado do 1º ano do Ensino Médio brasileiro. Responda em português do Brasil, em texto simples, sem markdown, sem asteriscos e sem #. Use parágrafos curtos.';
+const topic=()=>SUBJ[pS.value].t[pT.value];
+function busy(b){['pEx','pQz','pNext','pAsk'].forEach(id=>$('#'+id).disabled=b||(id==='pQz'&&!lastExp))}
+function fail(el,e){el.textContent=e&&e.code==='rate_limited'?'Muitas solicitações em pouco tempo. Espere um instante e tente de novo.':e&&e.code==='not_granted'?'Você precisa permitir o uso do Claude para o professor funcionar.':'Não consegui falar com o professor agora. Tente de novo.'}
+async function explain(){
+  $('#pQuiz').innerHTML='';$('#pAns').textContent='';quiz=null;lastExp='';busy(true);
+  const out=$('#pOut');out.textContent='O professor está preparando a aula...';
+  try{
+    const r=await sample(SYS+'\n\nExplique "'+topic()+'" ('+pS.value+') para um aluno do 1º ano do Ensino Médio. Comece com a ideia central em uma frase, explique passo a passo com 2 exemplos (do dia a dia ou resolvidos) e termine com "Resumo:" em 3 tópicos curtos. No máximo 350 palavras.',{onText:({text})=>{out.textContent=text}});
+    lastExp=r.text;out.textContent=r.text;
+  }catch(e){fail(out,e)}
+  busy(false);
+}
+async function makeQuiz(){
+  busy(true);graded=false;ans=[];const box=$('#pQuiz');box.textContent='Montando a prova...';
+  try{
+    const q=await sample.json(SYS+'\n\nCrie 5 questões de múltipla escolha, em estilo ENEM simplificado, sobre "'+topic()+'" ('+pS.value+'), com base nesta explicação:\n'+lastExp+'\n\nResponda SOMENTE com JSON: um array de 5 objetos {"pergunta":string,"alternativas":[4 strings sem letras],"correta":índice de 0 a 3,"explicacao":string curta}. Varie a posição da resposta correta.',{cache:false});
+    if(!Array.isArray(q)||!q.length)throw 0;
+    quiz=q;drawQ();
+  }catch(e){fail(box,e)}
+  busy(false);
+}
+function drawQ(){
+  const box=$('#pQuiz');box.innerHTML='';
+  quiz.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='q';
+    const p=document.createElement('p');p.textContent=(i+1)+'. '+q.pergunta;d.append(p);
+    q.alternativas.forEach((a,j)=>{
+      const b=document.createElement('button');
+      let c='opt';if(graded){if(j===q.correta)c+=' ok';else if(ans[i]===j)c+=' no'}else if(ans[i]===j)c+=' sel';
+      b.className=c;b.textContent=(ans[i]===j?'( X )  ':'(    )  ')+'ABCD'[j]+') '+a;
+      b.onclick=()=>{if(!graded){ans[i]=j;drawQ()}};d.append(b)});
+    if(graded){const f=document.createElement('div');f.className='fb';f.textContent=q.explicacao||'';d.append(f)}
+    box.append(d)});
+  if(!graded){
+    const g=document.createElement('button');g.className='btn';g.textContent='Corrigir prova';
+    g.onclick=()=>{if(quiz.some((_,i)=>ans[i]===undefined)){g.textContent='Marque X em todas as questões';return}
+      graded=true;const n=quiz.filter((q,i)=>ans[i]===q.correta).length;drawQ();addXP(n*10);
+      const s=document.createElement('div');s.className='score';
+      s.textContent='Você acertou '+n+' de '+quiz.length+'. '+(n/quiz.length>=0.6?'Conteúdo marcado como estudado!':'Releia a explicação e tente de novo.');
+      box.append(s);
+      if(n/quiz.length>=0.6){done[pS.value+'|'+pT.value]=true;store.set('ce-topics',done);drawM()}};
+    box.append(g)}
+}
+$('#pEx').onclick=explain;
+$('#pQz').onclick=makeQuiz;
+$('#pNext').onclick=()=>{const i=+pT.value+1;
+  if(i>=SUBJ[pS.value].t.length){pS.selectedIndex=(pS.selectedIndex+1)%names.length;fillTop()}else pT.value=i;explain()};
+$('#pAsk').onclick=async()=>{
+  const q=$('#pQ').value.trim(),out=$('#pAns');if(!q)return;busy(true);out.textContent='Pensando...';
+  try{
+    const r=await sample(SYS+'\n\nO aluno estudou "'+topic()+'" ('+pS.value+'). Explicação dada:\n'+lastExp+'\n\nDúvida do aluno: '+q+'\n\nResponda de forma clara e curta, com um exemplo se ajudar.',{cache:false,onText:({text})=>{out.textContent=text}});
+    out.textContent=r.text;$('#pQ').value='';
+  }catch(e){fail(out,e)}
+  busy(false)};
+(async()=>{try{sample=window.claude&&await window.claude.use('sample')}catch(e){}
+  if(!sample){$('#pNo').hidden=false;$('#pBox').hidden=true}else busy(false)})();
+
+/* Perfil, XP e sequência */
+let prof=store.get('ce-prof',{xp:0,days:[],nome:'',ano:'1º ano'});
+const iso=d=>d.toISOString().slice(0,10);
+function streak(){let n=0,d=new Date();const s=new Set(prof.days);if(!s.has(iso(d)))d.setDate(d.getDate()-1);while(s.has(iso(d))){n++;d.setDate(d.getDate()-1)}return n}
+function addXP(n){if(n<=0)return;prof.xp+=n;if(!prof.days.includes(today))prof.days.push(today);store.set('ce-prof',prof);drawS()}
+function drawS(){
+  const lv=Math.floor(Math.sqrt(prof.xp/50))+1,lo=50*(lv-1)**2,hi=50*lv**2;
+  $('#hi').textContent=(prof.nome?'Olá, '+prof.nome+'! ':'Olá! ')+'Bons estudos hoje.';
+  $('#stLv').textContent='Nível '+lv;$('#stXp').textContent=prof.xp+' XP';
+  $('#stSt').textContent=streak()+' dias seguidos';
+  $('#stH').textContent=(Object.values(sessions).reduce((a,b)=>a+b,0)*25/60).toFixed(1).replace('.',',')+' h de foco';
+  $('#stT').textContent=names.reduce((a,n)=>a+SUBJ[n].t.filter((_,i)=>done[n+'|'+i]).length,0)+' de '+names.reduce((a,n)=>a+SUBJ[n].t.length,0)+' conteúdos';
+  $('#stBar').style.width=Math.min(100,100*(prof.xp-lo)/(hi-lo))+'%';
+}
+const _dm=drawM;drawM=function(){_dm();drawS()};
+$('#nome').value=prof.nome;$('#ano').value=prof.ano;
+$('#nome').oninput=e=>{prof.nome=e.target.value;store.set('ce-prof',prof);drawS()};
+$('#ano').onchange=e=>{prof.ano=e.target.value;store.set('ce-prof',prof)};
+
+/* Professor ao vivo */
+const CSYS='Você é o Professor IA de uma plataforma de estudos para o Ensino Médio brasileiro. Converse de forma natural, amigável, paciente e inteligente, como um professor particular que gosta de ensinar, sem tom de robô e sem formalidade exagerada. Explique em partes pequenas, com exemplos do cotidiano, e evite explicações gigantes quando uma simples resolve. De vez em quando faça uma pergunta curta para checar se o aluno entendeu e espere a resposta antes de seguir. Se o aluno errar, explique o erro sem julgar; se não entendeu, explique de outro jeito, com outras palavras e outro exemplo. Ao resolver exercícios, mostre o raciocínio passo a passo. Incentive a autonomia do aluno, elogie sem exagero e nunca o faça se sentir mal por errar. Adapte a linguagem e a dificuldade ao ano escolar e ao nível do aluno. Pode usar poucos emojis. Escreva em texto simples, sem markdown pesado (sem # e sem tabelas); escreva fórmulas em texto, como x² + 2x + 1. Se houver foto de exercício, leia o enunciado e guie o aluno na resolução.';
+let chat=store.get('ce-chat',[]),img=null;
+fill($('#cSub'),'Qualquer matéria');
+const log=$('#cLog');
+function bubble(r,t){const d=document.createElement('div');d.className='bub '+r;d.textContent=t;log.append(d);log.scrollTop=log.scrollHeight;return d}
+function drawChat(){log.innerHTML='';
+  if(!chat.length)bubble('ai','Oi! Eu sou seu professor. Mande uma dúvida, uma foto de exercício ou peça para começar um assunto do zero. Sobre o que vamos estudar hoje?');
+  chat.forEach(m=>bubble(m.role==='user'?'me':'ai',m.content))}
+function speak(t){if(!$('#cVoice').checked||!window.speechSynthesis)return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,''));u.lang='pt-BR';speechSynthesis.speak(u)}
+async function send(){
+  const t=$('#cIn').value.trim();if(!t&&!img)return;
+  $('#cIn').value='';chat.push({role:'user',content:(t||'Pode me ajudar com o exercício da foto?')+(img?' [foto enviada]':'')});
+  bubble('me',chat[chat.length-1].content);const out=bubble('ai','...');$('#cSend').disabled=true;
+  const ctx='Aluno do '+prof.ano+' do Ensino Médio'+($('#cSub').value?', estudando '+$('#cSub').value:'')+'.';
+  const msgs=chat.slice(-20);while(msgs.length&&msgs[0].role!=='user')msgs.shift();
+  const input=msgs.map((m,i)=>({role:m.role,content:i?m.content:CSYS+'\n\n'+ctx+'\n\n'+m.content}));
+  try{
+    const r=await sample(input,{cache:false,images:img||undefined,onText:({text})=>{out.textContent=text}});
+    out.textContent=r.text;chat.push({role:'assistant',content:r.text});chat=chat.slice(-60);store.set('ce-chat',chat);addXP(3);speak(r.text);
+  }catch(e){fail(out,e);chat.pop()}
+  img=null;$('#cFile').value='';$('#cAtt').textContent='';$('#cSend').disabled=false;log.scrollTop=log.scrollHeight;
+}
+$('#cSend').onclick=send;$('#cIn').onkeydown=e=>{if(e.key==='Enter')send()};
+$('#cNew').onclick=()=>{chat=[];store.set('ce-chat',chat);drawChat()};
+$('#cFile').onchange=e=>{img=e.target.files[0]||null;$('#cAtt').textContent=img?'Foto anexada: '+img.name:''};
+drawChat();
+
+/* Redação ENEM */
+const COMP=['Domínio da norma culta','Compreensão do tema','Argumentação','Coesão textual','Proposta de intervenção'];
+$('#rTxt').oninput=e=>{$('#rCnt').textContent=e.target.value.length+' caracteres'};
+$('#rSug').onclick=async()=>{const b=$('#rSug');b.disabled=true;
+  try{const r=await sample('Sugira UM tema de redação no estilo ENEM, atual e relevante para a sociedade brasileira, em uma única frase, começando com "Desafios para" ou "Caminhos para". Responda só com o tema.',{cache:false});$('#rTema').value=r.text.trim()}catch(e){fail($('#rOut'),e)}
+  b.disabled=false};
+$('#rGo').onclick=async()=>{
+  const tx=$('#rTxt').value.trim(),o=$('#rOut');
+  if(tx.length<400){o.textContent='Escreva pelo menos 400 caracteres para receber a correção.';return}
+  $('#rGo').disabled=true;o.textContent='O corretor está lendo sua redação...';
+  try{
+    const r=await sample.json('Você é um corretor de redação do ENEM, educativo e gentil, que nunca humilha o aluno. Avalie a redação nas 5 competências, cada nota sendo 0, 40, 80, 120, 160 ou 200: (1) domínio da norma culta; (2) compreensão do tema e estrutura dissertativo-argumentativa; (3) seleção e organização de argumentos; (4) coesão; (5) proposta de intervenção. Seja honesto e explique pontos fortes e como melhorar. Responda SOMENTE com JSON: {"competencias":[{"nota":número,"fortes":string,"melhorar":string}] com 5 itens,"comentario":string,"proximosPassos":string}.\n\nTema: '+($('#rTema').value||'livre')+'\n\nRedação:\n'+tx,{cache:false});
+    o.innerHTML='';const tot=r.competencias.reduce((a,c)=>a+(+c.nota||0),0);
+    const s=document.createElement('div');s.className='score';s.textContent='Nota estimada: '+tot+' / 1000';o.append(s);
+    r.competencias.forEach((c,i)=>{const d=document.createElement('div');d.className='rc';
+      const h=document.createElement('b');h.textContent='Competência '+(i+1)+': '+COMP[i]+' ('+c.nota+'/200)';
+      const a=document.createElement('p');a.textContent='Pontos fortes: '+c.fortes;
+      const m=document.createElement('p');m.textContent='Para melhorar: '+c.melhorar;d.append(h,a,m);o.append(d)});
+    const f=document.createElement('div');f.className='out';f.textContent=r.comentario+'\n\nPróximos passos: '+r.proximosPassos;o.append(f);
+    const n=document.createElement('p');n.className='muted stat';n.textContent='Correção educativa feita por IA. Ela é uma estimativa e não substitui a correção oficial do ENEM.';o.append(n);
+    addXP(40);
+  }catch(e){fail(o,e)}
+  $('#rGo').disabled=false};
+
+(async()=>{
+  let s=null,d=null;try{s=window.claude&&await window.claude.use('sample')}catch(e){}
+  if(!s){['cNo','rNo'].forEach(i=>$('#'+i).hidden=false);['cBox','rBox'].forEach(i=>$('#'+i).hidden=true);return}
+  try{const l=await s.limits();if(l&&l.images)$('#cPhoto').hidden=false}catch(e){}
+  try{d=await window.claude.use('dictation')}catch(e){}
+  if(d){const mic=$('#cMic');mic.hidden=false;
+    d.onFinal(({text})=>{const t=$('#'+(window.micT||'cIn'));t.value=(t.value+' '+text).trim()});
+    d.onState(({state})=>{if((window.micT||'cIn')==='cIn')mic.textContent=state==='listening'?'Parar':'Falar'});
+    mic.onclick=()=>{window.micT='cIn';d.active()?d.stop():d.start({language:'pt-BR'}).catch(()=>{})}}
+})();
+
+/* Meu Amigo de Estudos */
+let S=null,img2=null;
+let am=store.get('ce-amigo',{nome:'Bê',av:'🦊',tom:'Divertido',mem:true});
+let convs=store.get('ce-amigo-convs',[]),cid=convs.length?convs[0].id:null;
+fill($('#aSub'),'Qualquer matéria');
+const aLog=$('#aLog');
+const ASYS='Você é o amigo de estudos de um aluno do Ensino Médio brasileiro. Você NÃO é o professor: o professor dá aulas completas; você acompanha, incentiva e ajuda o aluno a descobrir as respostas sozinho. Fale como um amigo inteligente que estuda junto: linguagem jovem e natural, bom humor na medida, sem tom de robô nem de professor formal, poucos emojis. Mensagens curtas, de 2 a 5 frases. REGRA PRINCIPAL: não entregue a resposta nem a resolução. Quando o aluno mandar uma questão: entenda o que ela pede; descubra onde está a dificuldade; dê UMA dica sutil e faça UMA pergunta que o ajude a raciocinar; espere a tentativa dele. Se continuar travado, dê uma dica mais específica, depois explique o conceito necessário sem dar o resultado. Quando ele acertar, explique por que o raciocínio funcionou. As dicas são progressivas, da mais sutil à mais detalhada. Só mostre a resolução completa se o aluno pedir de forma explícita para ver a explicação ou resolução completa. Adapte as dicas à matéria: na matemática, pistas sobre operações e raciocínio; na física, conceitos e fórmulas; na química, elementos e reações; na história, contexto e acontecimentos; no português, interpretação e regras gramaticais; na redação, sugira melhorias sem escrever o texto pelo aluno. Nunca julgue o aluno por errar, elogie sem exagero e mostre interesse pelo que ele está aprendendo. Se ele estiver desanimado, cansado ou com medo de ir mal, pare de ensinar: ouça, valide o sentimento sem minimizar, e ajude a escolher um próximo passo bem pequeno. Se ele falar em se machucar ou em desesperança grave, acolha com carinho e incentive a conversar com um adulto de confiança ou ligar para o CVV (188, gratuito, 24 horas). Escreva em texto simples, sem markdown pesado. Se houver foto de exercício, leia o enunciado e comece pela dica, não pela resposta.';
+function memo(){
+  const l=names.map(n=>{const k=SUBJ[n].t.filter((_,i)=>done[n+'|'+i]).length;return k?n+': '+k+' de '+SUBJ[n].t.length+' conteúdos estudados':null}).filter(Boolean);
+  return (prof.nome?'Nome do aluno: '+prof.nome+'. ':'')+'Ano: '+prof.ano+'. Nível '+(Math.floor(Math.sqrt(prof.xp/50))+1)+', '+prof.xp+' XP, '+streak()+' dias seguidos. '+(l.length?l.join('; ')+'.':'Ainda não marcou conteúdos como estudados.')}
+const cv=()=>convs.find(c=>c.id===cid);
+const saveC=()=>store.set('ce-amigo-convs',convs);
+function aBub(r,t){const d=document.createElement('div');d.className='bub '+r;d.textContent=t;aLog.append(d);aLog.scrollTop=aLog.scrollHeight;return d}
+function drawA(){
+  $('#aAv').textContent=am.av;$('#aHead').textContent=am.nome||'Meu amigo';
+  const h=$('#aHist');h.innerHTML='';
+  if(!convs.length){const o=document.createElement('option');o.textContent='Nenhuma conversa ainda';h.append(o)}
+  convs.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.t;h.append(o)});
+  if(cid)h.value=cid;
+  aLog.innerHTML='';const c=cv();
+  if(!c||!c.m.length)aBub('ai','E aí! Eu sou o '+(am.nome||'seu amigo')+'. Vamos estudar junto? Me conta o que você está estudando ou manda a questão que está te pegando. Eu não vou te dar a resposta, mas prometo ajudar você a chegar nela.');
+  else c.m.forEach(m=>aBub(m.role==='user'?'me':'ai',m.content));
+}
+function newConv(){const c={id:String(Date.now()),t:'Nova conversa',m:[]};convs.unshift(c);cid=c.id;saveC();drawA()}
+function aSpeak(t){if(!$('#aVoice').checked||!window.speechSynthesis)return;speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,''));u.lang='pt-BR';speechSynthesis.speak(u)}
+async function aSend(text){
+  const t=(text||$('#aIn').value).trim();if(!t&&!img2)return;
+  if(!S)return;
+  if(!cv())newConv();
+  const c=cv(),msg=(t||'Olha essa questão da foto.')+(img2?' [foto enviada]':'');
+  $('#aIn').value='';c.m.push({role:'user',content:msg});
+  if(c.t==='Nova conversa')c.t=msg.slice(0,32);
+  saveC();drawA();const out=aBub('ai','...');$('#aSend').disabled=true;
+  const ctx='Nome do amigo: '+(am.nome||'Bê')+'. Personalidade: '+am.tom.toLowerCase()+'. Aluno do '+prof.ano+' do Ensino Médio'+($('#aSub').value?', estudando '+$('#aSub').value:'')+'.'+(am.mem?' Progresso do aluno: '+memo():' O aluno preferiu não compartilhar o progresso.');
+  const msgs=c.m.slice(-24);while(msgs.length&&msgs[0].role!=='user')msgs.shift();
+  const input=msgs.map((m,i)=>({role:m.role,content:i?m.content:ASYS+'\n\n'+ctx+'\n\n'+m.content}));
+  try{
+    const r=await S(input,{cache:false,images:img2||undefined,onText:({text})=>{out.textContent=text}});
+    out.textContent=r.text;c.m.push({role:'assistant',content:r.text});c.m=c.m.slice(-80);saveC();addXP(3);aSpeak(r.text);
+  }catch(e){fail(out,e);c.m.pop();saveC()}
+  img2=null;$('#aFile').value='';$('#aAtt').textContent='';$('#aSend').disabled=false;aLog.scrollTop=aLog.scrollHeight;
+}
+['Me dá uma dica?','Não entendi essa parte.','Me explica de outro jeito.','Me ajuda a pensar.','Estou desanimado.','Vamos estudar juntos?'].forEach(t=>{
+  const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>aSend(t);$('#aChips').append(b)});
+$('#aSend').onclick=()=>aSend();$('#aIn').onkeydown=e=>{if(e.key==='Enter')aSend()};
+$('#aNew').onclick=newConv;
+$('#aHist').onchange=e=>{cid=e.target.value;drawA()};
+$('#aFile').onchange=e=>{img2=e.target.files[0]||null;$('#aAtt').textContent=img2?'Foto anexada: '+img2.name:''};
+$('#aName').value=am.nome;$('#aAvS').value=am.av;$('#aTom').value=am.tom;$('#aMem').checked=am.mem;
+const saveAm=()=>{store.set('ce-amigo',am);drawA()};
+$('#aName').oninput=e=>{am.nome=e.target.value.trim();saveAm()};
+$('#aAvS').onchange=e=>{am.av=e.target.value;saveAm()};
+$('#aTom').onchange=e=>{am.tom=e.target.value;saveAm()};
+$('#aMem').onchange=e=>{am.mem=e.target.checked;store.set('ce-amigo',am);$('#aSeeOut').textContent=''};
+$('#aSee').onclick=()=>{$('#aSeeOut').textContent=am.mem?'O amigo vê isto: '+memo()+'\n\nAs conversas ficam salvas só neste navegador.':'A memória está desligada. O amigo não recebe seu progresso, apenas o que você escreve na conversa.'};
+$('#aWipe').onclick=()=>{if(!convs.length)return;if(!$('#aWipe').dataset.ok){$('#aWipe').dataset.ok=1;$('#aWipe').textContent='Clique de novo para apagar tudo';return}
+  convs=[];cid=null;saveC();delete $('#aWipe').dataset.ok;$('#aWipe').textContent='Apagar histórico de conversas';drawA()};
+drawA();
+(async()=>{
+  let s=null,d=null;try{s=window.claude&&await window.claude.use('sample')}catch(e){}
+  if(!s){$('#aNo').hidden=false;$('#aBox').hidden=true;return}
+  S=s;
+  try{const l=await s.limits();if(l&&l.images)$('#aPhoto').hidden=false}catch(e){}
+  try{d=await window.claude.use('dictation')}catch(e){}
+  if(d){const m=$('#aMic');m.hidden=false;
+    d.onState(({state})=>{if(window.micT==='aIn')m.textContent=state==='listening'?'Parar':'Falar'});
+    m.onclick=()=>{window.micT='aIn';d.active()?d.stop():d.start({language:'pt-BR'}).catch(()=>{})}}
+})();
+
+/* Central de Pesquisas */
+const mk=(p,t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x)e.textContent=x;p.append(e);return e};
+let docs=store.get('ce-pdfs',[]),pj=store.get('ce-proj',[]),curP=null,SP=null,DL=null,dh=[];const mem={};
+const sv=()=>store.set('ce-proj',pj),sd=()=>store.set('ce-pdfs',docs);
+const NOAI='O assistente só funciona quando o site é aberto pelo Claude.';
+fill($('#wMat'));fill($('#sMat'),'Qualquer matéria');
+function pv(v){$('#pHome').hidden=!!v;$('#pViews').hidden=!v;document.querySelectorAll('.pv').forEach(x=>x.hidden=x.id!=='v-'+v)}
+document.querySelectorAll('.tile').forEach(t=>t.onclick=()=>pv(t.dataset.v));
+$('#pBack').onclick=()=>{pv(null);drawPj()};
+
+/* Projetos */
+function drawPj(){
+  const f=$('#pjF'),cur=f.value;f.innerHTML='';
+  const o0=mk(f,'option','','Todas as pastas');o0.value='';
+  [...new Set(pj.map(p=>p.pasta).filter(Boolean))].forEach(n=>{const o=mk(f,'option','',n);o.value=n});f.value=cur;
+  const ul=$('#pjList');ul.innerHTML='';
+  const L=pj.filter(p=>!f.value||p.pasta===f.value).sort((a,b)=>b.upd-a.upd);
+  if(!L.length)mk(ul,'li','muted','Nenhum projeto ainda. Crie um trabalho ou gere um resumo.');
+  L.forEach(p=>{
+    const li=mk(ul,'li','t'),m=mk(li,'button','pjb');m.onclick=()=>openP(p);
+    mk(m,'b','',p.titulo);mk(m,'small','',p.materia+' · '+p.tipo+(p.pasta?' · '+p.pasta:''));
+    mk(li,'span','badge'+(p.status==='Salvo'?' ok':''),p.status);
+    const r=mk(li,'button','btn alt small','Renomear');
+    r.onclick=()=>{const i=document.createElement('input');i.value=p.titulo;i.setAttribute('aria-label','Novo nome');i.onkeydown=e=>{if(e.key==='Enter'){p.titulo=i.value.trim()||p.titulo;p.upd=Date.now();sv();drawPj()}};m.replaceWith(i);i.focus()};
+    mk(li,'button','btn alt small','Duplicar').onclick=()=>{pj.push({...p,id:String(Date.now()),titulo:p.titulo+' (cópia)',status:'Rascunho',upd:Date.now()});sv();drawPj()};
+    const x=mk(li,'button','btn alt small','Excluir');
+    x.onclick=()=>{if(!x.dataset.c){x.dataset.c=1;x.textContent='Confirmar?';return}pj=pj.filter(q=>q!==p);sv();drawPj()}});
+}
+$('#pjF').onchange=drawPj;
+function openP(p){curP=p.id;
+  if(p.tipo==='Resumo'){pv('res');$('#rOut').textContent=p.texto;$('#rSave').hidden=true;return}
+  pv('criar');$('#wMat').value=p.materia;$('#wAno').value=p.ano;$('#wTit').value=p.titulo;$('#wTxt').value=p.texto;$('#wPasta').value=p.pasta||'';$('#wEdit').hidden=false}
+function saveW(st){
+  let p=pj.find(x=>x.id===curP);
+  if(!p){p={id:String(Date.now()),tipo:'Trabalho escolar'};pj.push(p);curP=p.id}
+  Object.assign(p,{titulo:$('#wTit').value.trim()||'Trabalho sem título',materia:$('#wMat').value,ano:$('#wAno').value,texto:$('#wTxt').value,pasta:$('#wPasta').value.trim(),status:st,upd:Date.now()});sv()}
+
+/* Criar trabalho */
+$('#wGo').onclick=async()=>{
+  const tema=$('#wTema').value.trim(),msg=$('#wMsg');
+  if(!tema){msg.textContent='Escreva o tema do trabalho.';return}
+  if(!SP){msg.textContent=NOAI;return}
+  const d=docs.find(x=>x.id===$('#wRef').value),ori=$('#wOri').value.trim();
+  $('#wGo').disabled=true;msg.textContent='Montando o trabalho...';curP=null;
+  try{
+    const r=await SP('Você ajuda um aluno do '+$('#wAno').value+' do Ensino Médio a elaborar um trabalho escolar de '+$('#wMat').value+' sobre "'+tema+'". Tamanho: '+$('#wTam').value+'. Formato: '+$('#wFmt').value+'. '+(ori?'Orientações do professor: '+ori+'. ':'')+'Escreva em linguagem natural e adequada ao Ensino Médio, bem organizada, com título, introdução, desenvolvimento com tópicos e subtópicos, conclusão e referências. Use "# " para o título, "## " para cada seção e "### " para subseções, parágrafos em texto simples e nenhum outro markdown. NÃO invente dados, estatísticas, autores, citações nem referências; se não tiver certeza de algo, escreva em termos gerais ou deixe de fora. Em Referências, liste apenas o documento de referência fornecido abaixo; se não houver, escreva: [Adicione aqui as fontes que você consultar, seguindo a ABNT]. Escreva a conclusão como um rascunho para o aluno reescrever com as próprias palavras.'+(d?'\n\nDocumento de referência: '+d.nome+'\n'+d.t.slice(0,50000):''),{cache:false});
+    $('#wTxt').value=r.text.trim();const m=r.text.match(/^# (.+)$/m);$('#wTit').value=m?m[1]:tema;
+    $('#wEdit').hidden=false;saveW('Rascunho');msg.textContent='Pronto! Leia, confira os fatos e reescreva com suas palavras. Use o Modo aprendizado para entender o texto.';addXP(15);
+  }catch(e){fail(msg,e)}
+  $('#wGo').disabled=false};
+$('#wTxt').oninput=()=>{if(curP)saveW('Rascunho')};
+$('#wSave').onclick=()=>{saveW('Salvo');$('#wMsg').textContent='Projeto salvo.'};
+const LP={e:'Explique com palavras simples o que o aluno escreveu, parte por parte, e os conceitos usados. Não reescreva o texto dele.',c:'Aponte os trechos confusos ou vagos e explique por quê, com perguntas que ajudem o aluno a melhorar. Não reescreva por ele.',p:'Aponte trechos que soam genéricos, copiados ou decorados e oriente o aluno a reescrever com as próprias palavras, com um método passo a passo e um exemplo curto de reescrita de uma frase qualquer (não do texto dele). Explique como citar fontes. Não afirme que há plágio: você não consegue verificar isso.',m:'Sugira melhorias de estrutura, argumentos e conclusão, em tópicos curtos, sem escrever o texto pelo aluno.',t:'Crie 5 perguntas para o aluno testar se entendeu o assunto do próprio trabalho, sem dar as respostas.'};
+$('#wAsk').onclick=async()=>{
+  const msg=$('#wMsg');if(!SP){msg.textContent=NOAI;return}
+  $('#wAsk').disabled=true;msg.textContent='Lendo seu trabalho...';
+  try{const r=await SP('Você é um professor do Ensino Médio que ajuda o aluno a compreender o próprio trabalho, sem fazer o trabalho por ele. Responda em português, em texto simples. '+LP[$('#wLearn').value]+' Lembre o aluno de conferir os fatos em fontes confiáveis.\n\nMatéria: '+$('#wMat').value+'\n\nTrabalho:\n'+$('#wTxt').value,{cache:false,onText:({text})=>{msg.textContent=text}});msg.textContent=r.text}catch(e){fail(msg,e)}
+  $('#wAsk').disabled=false};
+function toHtml(){
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;'),toc=[];let h='';
+  $('#wTxt').value.split('\n').forEach(l=>{if(/^### /.test(l))h+='<h3>'+esc(l.slice(4))+'</h3>';else if(/^## /.test(l)){toc.push(l.slice(3));h+='<h2>'+esc(l.slice(3))+'</h2>'}else if(!/^# /.test(l)&&l.trim())h+='<p>'+esc(l)+'</p>'});
+  const t=esc($('#wTit').value);
+  if(!$('#wAbnt').checked)return '<h1>'+t+'</h1>'+h;
+  return '<div class="capa"><p>'+esc(prof.nome||'')+'</p><div><h1>'+t+'</h1><p style="text-align:center">'+esc($('#wMat').value+' · '+$('#wAno').value)+'</p></div><p>'+new Date().getFullYear()+'</p></div><div class="sum"><h2>Sumário</h2><ol>'+toc.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>'+h}
+$('#wPdf').onclick=()=>{
+  let pa=$('#printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.append(pa)}
+  pa.innerHTML=toHtml();
+  try{window.print()}catch(e){$('#wMsg').textContent='Não consegui abrir a impressão aqui. Tente o botão Baixar para Word.'}};
+$('#wDoc').onclick=async()=>{
+  try{await DL.save({filename:'trabalho.doc',data:'<html><head><meta charset="utf-8"><style>body{font-family:"Times New Roman";font-size:12pt;line-height:1.5}h1{font-size:16pt;text-align:center}h2{font-size:13pt}</style></head><body>'+toHtml()+'</body></html>'});$('#wMsg').textContent='Arquivo enviado. Ele abre no Word com título, seções e sumário.'}
+  catch(e){$('#wMsg').textContent='Não consegui baixar o arquivo agora. Use Imprimir ou salvar em PDF.'}};
+
+/* Meus PDFs */
+async function readPdf(f){
+  const lib=window.pdfjsLib;if(!lib)throw 0;
+  lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await lib.getDocument({data:await f.arrayBuffer()}).promise;let t='';
+  for(let i=1;i<=pdf.numPages;i++){const c=await(await pdf.getPage(i)).getTextContent();t+='[Página '+i+']\n'+c.items.map(x=>x.str).join(' ')+'\n\n'}
+  return{pdf,n:pdf.numPages,t}}
+async function pageImgs(pdf,n){const o=[];for(let i=1;i<=Math.min(n,5);i++){const p=await pdf.getPage(i),v=p.getViewport({scale:1.3}),c=document.createElement('canvas');c.width=v.width;c.height=v.height;await p.render({canvasContext:c.getContext('2d'),viewport:v}).promise;o.push(await new Promise(r=>c.toBlob(r,'image/jpeg',.7)))}return o}
+$('#pdfIn').onchange=async e=>{
+  for(const f of e.target.files){$('#pdfSt').textContent='Lendo '+f.name+'...';
+    try{const r=await readPdf(f),d={id:String(Date.now()+Math.random()),nome:f.name.replace(/\.pdf$/i,''),n:r.n,t:r.t.slice(0,150000),on:true,scan:r.t.replace(/\[Página \d+\]|\s/g,'').length<60*r.n};
+      mem[d.id]=r.pdf;docs.push(d);sd()}catch(x){$('#pdfSt').textContent='Não consegui ler '+f.name+'. Confira se é um PDF válido.';e.target.value='';drawPdf();return}}
+  $('#pdfSt').textContent='';e.target.value='';drawPdf()};
+function drawPdf(){
+  const ul=$('#pdfList');ul.innerHTML='';
+  if(!docs.length)mk(ul,'li','muted','Nenhum PDF enviado ainda.');
+  docs.forEach((d,i)=>{const li=mk(ul,'li','t'),cb=document.createElement('input');cb.type='checkbox';cb.checked=d.on;cb.setAttribute('aria-label','Usar no chat: '+d.nome);cb.onchange=()=>{d.on=cb.checked;sd()};li.append(cb);
+    mk(li,'span','x',d.nome+' · '+d.n+' págs'+(d.scan?' · digitalizado (leitura por imagem)':''));
+    const x=mk(li,'button','del','×');x.setAttribute('aria-label','Excluir PDF');x.onclick=()=>{docs.splice(i,1);delete mem[d.id];sd();drawPdf()}});
+  [['#rSrc','Texto colado abaixo'],['#wRef','Sem PDF de referência']].forEach(([s,first])=>{const el=$(s),v=el.value;el.innerHTML='';mk(el,'option','',first).value='';docs.forEach(d=>{mk(el,'option','',d.nome).value=d.id});el.value=v})}
+const DSYS='Você responde perguntas de um aluno do Ensino Médio sobre documentos que ele enviou. Use o conteúdo dos documentos como fonte principal e indique sempre a página de onde tirou cada informação, no formato (nome do documento, p. X). Separe o que está no documento do que é complemento seu, marcando o complemento com "Complemento (fora do documento):". Se a resposta não estiver no documento, diga isso com clareza e não invente. Use linguagem simples e natural, em texto simples. Se o documento é digitalizado, leia as imagens das páginas anexadas.';
+async function dAsk(q){
+  q=(q||$('#dIn').value).trim();if(!q)return;
+  const on=docs.filter(d=>d.on),log=$('#dLog');
+  if(!SP){mk(log,'div','bub ai',NOAI);return}
+  if(!on.length){mk(log,'div','bub ai','Envie um PDF e marque a caixinha dele para eu conversar sobre ele.');return}
+  $('#dIn').value='';dh.push({role:'user',content:q});mk(log,'div','bub me',q);const out=mk(log,'div','bub ai','...');
+  let imgs=[];try{for(const d of on.filter(d=>d.scan&&mem[d.id]))imgs=imgs.concat(await pageImgs(mem[d.id],d.n))}catch(e){}
+  const ms=dh.slice(-12);while(ms.length&&ms[0].role!=='user')ms.shift();
+  const input=ms.map((m,i)=>({role:m.role,content:i?m.content:DSYS+'\n\n'+on.map(d=>'=== Documento: '+d.nome+' ('+d.n+' páginas) ===\n'+d.t.slice(0,60000)).join('\n\n')+'\n\nPergunta do aluno: '+m.content}));
+  try{const r=await SP(input,{cache:false,images:imgs.length?imgs:undefined,onText:({text})=>{out.textContent=text}});out.textContent=r.text;dh.push({role:'assistant',content:r.text})}
+  catch(e){fail(out,e);dh.pop()}
+  log.scrollTop=log.scrollHeight}
+['Resume esse PDF para mim.','Quais são os pontos mais importantes?','Explica as palavras difíceis.','Quais perguntas podem cair na prova sobre esse conteúdo?'].forEach(t=>mk($('#dChips'),'button','chip',t).onclick=()=>dAsk(t));
+$('#dSend').onclick=()=>dAsk();$('#dIn').onkeydown=e=>{if(e.key==='Enter')dAsk()};
+
+/* Pesquisar na internet */
+$('#sGo').onclick=async()=>{
+  const q=$('#sQ').value.trim(),o=$('#sOut'),L=$('#sLinks');if(!q)return;
+  L.innerHTML='';const e=encodeURIComponent;
+  [['Google Acadêmico','https://scholar.google.com/scholar?hl=pt-BR&q='+e(q)],['SciELO','https://search.scielo.org/?q='+e(q)],['Sites do governo (gov.br)','https://www.google.com/search?q='+e(q+' site:gov.br')],['Universidades (edu.br)','https://www.google.com/search?q='+e(q+' site:edu.br')]].forEach(([n,u])=>{const a=mk(L,'a','btn alt small',n);a.href=u;a.target='_blank';a.rel='noopener noreferrer'});
+  if(!SP){o.textContent=NOAI;return}
+  $('#sGo').disabled=true;o.textContent='Montando o plano...';
+  try{const r=await SP('Um aluno do '+prof.ano+' do Ensino Médio quer pesquisar "'+q+'"'+($('#sMat').value?' em '+$('#sMat').value:'')+'. Você NÃO tem acesso à internet agora e deve avisar isso no início. Monte um plano de pesquisa em texto simples: 1) quatro perguntas-chave; 2) seis palavras-chave de busca; 3) tipos de fontes confiáveis para esse tema (órgãos oficiais, universidades, publicações científicas) e instituições que costumam tratar do assunto, SEM inventar links, autores, datas ou citações; 4) como separar fato de opinião e conferir uma fonte; 5) como anotar para escrever com as próprias palavras.',{cache:false,onText:({text})=>{o.textContent=text}});o.textContent=r.text}catch(x){fail(o,x)}
+  $('#sGo').disabled=false};
+
+/* Resumos inteligentes */
+const TP={'Resumo curto':'um resumo curto, de até 120 palavras','Resumo detalhado':'um resumo detalhado','Resumo por capítulos':'um resumo organizado por capítulos ou seções','Mapa mental':'um mapa mental em texto, com o tema central e ramos indentados com hífens','Fichamento':'um fichamento com tema, ideias principais, conceitos e dúvidas','Lista de conceitos':'uma lista de conceitos importantes, cada um com definição simples','Flashcards':'10 flashcards, cada um com uma linha "P: pergunta" e outra "R: resposta"','Perguntas e respostas':'8 perguntas e respostas para estudar','Guia de revisão':'um guia de revisão com o que estudar, na ordem, e erros comuns'};
+Object.keys(TP).forEach(k=>mk($('#rTipo'),'option','',k).value=k);
+let rLast=null;
+$('#rGo').onclick=async()=>{
+  const o=$('#rOut'),d=docs.find(x=>x.id===$('#rSrc').value),src=d?d.t.slice(0,60000):$('#rIn').value.trim();
+  if(!src){o.textContent='Escolha um PDF ou cole um texto.';return}
+  if(!SP){o.textContent=NOAI;return}
+  $('#rGo').disabled=true;$('#rSave').hidden=true;o.textContent='Gerando...';
+  try{const r=await SP('Com base somente no material abaixo, crie '+TP[$('#rTipo').value]+'. Nível: '+$('#rNiv').value.toLowerCase()+', para um aluno do '+prof.ano+' do Ensino Médio. Quando houver marcadores [Página N], indique as páginas usadas. Não invente informações que não estejam no material. Texto simples, sem markdown pesado.\n\nMaterial:\n'+src,{cache:false,onText:({text})=>{o.textContent=text}});
+    o.textContent=r.text;rLast={t:$('#rTipo').value+' — '+(d?d.nome:'texto colado'),x:r.text};$('#rSave').hidden=false;addXP(10)}catch(e){fail(o,e)}
+  $('#rGo').disabled=false};
+$('#rSave').onclick=()=>{if(!rLast)return;pj.push({id:String(Date.now()),tipo:'Resumo',titulo:rLast.t,materia:'Geral',ano:prof.ano,texto:rLast.x,pasta:'',status:'Salvo',upd:Date.now()});sv();$('#rSave').hidden=true;$('#rOut').textContent+='\n\nSalvo nos projetos.'};
+
+(async()=>{try{SP=window.claude&&await window.claude.use('sample')}catch(e){}
+  try{DL=window.claude&&await window.claude.use('downloads')}catch(e){}
+  if(!DL)$('#wDoc').hidden=true})();
+pv(null);drawPdf();drawPj();
+
+drawM();drawT();drawC();loadN();
+</script>
+</body>
+</html>
